@@ -35,6 +35,10 @@
  * These values actually drive the servos a little past 0 and 180, so
  * if you are particular, adjust the min and max values to match your needs.
  */
+ /* Aaron Edits
+ Pin 2 is for Bottom Servo movement
+ Pin 4 is for Top Servo movement
+ */
 
 #include <ESP32Servo.h>
 
