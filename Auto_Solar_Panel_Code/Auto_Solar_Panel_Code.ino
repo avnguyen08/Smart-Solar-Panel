@@ -2,6 +2,7 @@
 SUMMARY: Auto adjusting solar panel. Uses esp32 wroom. Example code taken from Great Scott Solar panel auto adjusting video. 
 Uses pins d19, d21, d32, d35 as analog read. 
 Uses D2 and D4 as output to configure solar panels.
+Board on Arduino IDE is ESP32 Dev Module
 
 
 */
@@ -15,7 +16,7 @@ int topright;
 int downleft;
 int downright;
 int change = 1;
-int waittime = 10;
+int waittime = 500;
 int light_sens = 500;
 
 
@@ -51,6 +52,8 @@ void setup() {
   myservoBot.attach(servoPinBot, 500, 2450);  // attaches the servo on pin 4 to the servo object
   myservoTop.attach(servoPinTop, 500, 2400);  // attaches the servo on pin 2 to the servo object
   Serial.println("Hello World");
+  myservoTop.write(map(135, 0, 270, 0, 180));  // tell servo to go to position in variable 'pos'
+  myservoBot.write(map(0, 0, 270, 0, 180));  // tell servo to go to position in variable 'pos'
   delay(5000);
   // using default min/max of 1000us and 2000us
   // different servos may require different min/max settings
