@@ -19,7 +19,7 @@ int change = 1;
 int waittime = 500;
 int light_sens = 500;
 
-
+//Pins reading input voltage from photoresistors
 int PINA = 25;
 int PINB = 33;
 int PINC = 32;
