@@ -34,8 +34,8 @@ int maxtopval = 225;
 int posTop = 90;  // variable to store the servo position
 int posBot = 90;  // variable to store the servo position
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
-int servoPinTop = 2;
-int servoPinBot = 4;
+int servoPinTop = 4;
+int servoPinBot = 2;
 void setup() {
   Serial.begin(19200);
   pinMode(PINA, INPUT);
