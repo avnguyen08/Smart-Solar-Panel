@@ -7,6 +7,7 @@ Board on Arduino IDE is ESP32 Dev Module
 
 */
 #include <ESP32Servo.h>
+#include "Servo_Panel_Calibration\servo_move.h"
 //DEBUG VARIABLES
 #define SLOW 50
 #define MEDIUM 25
@@ -14,29 +15,6 @@ Board on Arduino IDE is ESP32 Dev Module
 #define SUPERFAST 5
 char string[50];
 
-//function that will move servo to specified point at a slow rate (As  opposed to "Servo.write()" function which goes as fast as possible)
-void servo_move(Servo *servo, uint *cur_deg, uint next_deg, int waitTime) {
-  //if current degree < next degree, execute while statement
-  if ((*cur_deg) < next_deg) {
-    //while current degrees < next degrees, keep adding +1 degree every few ms until current degree > next degree
-    while ((*cur_deg) < next_deg) {
-      delay(waitTime);
-      (*cur_deg)++;
-      Serial.println("Current Degree: " + String(*cur_deg));
-      (*servo).write(map((*cur_deg), 0, 270, 0, 180));
-    }
-  }
-  // if current degree > next degree, execute while statement
-  if ((*cur_deg) > next_deg) {
-    //While current degree > next degrees, keep subtracting -1 degree from current degree until current degree < next degree.
-    while ((*cur_deg) > next_deg) {
-      delay(waitTime);
-      (*cur_deg)--;
-      Serial.println("Current Degree: " + String(*cur_deg));
-      (*servo).write(map((*cur_deg), 0, 270, 0, 180));
-    }
-  }
-}
 
 //value of photoresistors
 int topleft;
@@ -44,8 +22,8 @@ int topright;
 int downleft;
 int downright;
 int change = 1;
-uint waittime = 25;
-int light_sens = 500;
+uint waittime = 50;
+int light_sens = 2000;
 
 //Pins reading input voltage from photoresistors
 int PINA = 25;
@@ -56,11 +34,11 @@ int PIND = 35;
 Servo myservoBot;  // create servo object to control bottom servo
 Servo myservoTop;  // create servo object to control top servo
 // 16 servo objects can be created on the ESP32
-int minbotval = 20;
-int maxbotval = 250;
-int mintopval = 45;
-int maxtopval = 225;
-uint posTop = 135;  // variable to store the servo position
+int minbotval = 0;
+int maxbotval = 180;
+int mintopval = 0;
+int maxtopval = 180;
+uint posTop = 0;  // variable to store the servo position
 uint posBot = 0;  // variable to store the servo position
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
 int servoPinTop = 4;
@@ -83,7 +61,7 @@ void setup() {
   Serial.println("Hello World");
   // servo_move(&myservoBot, &posBot, 0, MEDIUM);
   delay(2000);
-  // servo_move(&myservoTop, &posTop, 45, MEDIUM);
+  // servo_move(&myservoTop, &posTop, 0, MEDIUM);
   delay(2000);
   // using default min/max of 1000us and 2000us
   // different servos may require different min/max settings
@@ -96,62 +74,61 @@ void loop() {
   downleft = analogRead(PINC);
   downright = analogRead(PIND);
 
-//light shines on top right side more than top left.  Turn counterclockwise
-  if (((topleft - topright) > light_sens) && (posBot < maxbotval)) {
-    // servo_move(&myservoTop, &posTop, (posTop + change), MEDIUM);
+  //light shines on right side more than left.  Turn counterclockwise
+  if (((topleft - topright) > light_sens) && (posBot <= maxbotval)) {
     posBot = posBot + change;
-  sprintf(string, "1st: subtracting");
-  Serial.println(string);
     delay(waittime);
   }
-  //light shines on down right side more than down left. Turn counterclockwise
-  if (((downleft - downright) > light_sens) && (posBot < maxbotval)) {
-    // servo_move(&myservoTop, &posTop, (posTop + change), MEDIUM);
+  if (((downleft - downright) > light_sens) && (posBot <= maxbotval)) {
     posBot = posBot + change;
-  sprintf(string, "2nd: adding");
-  Serial.println(string);
+    Serial.println(string);
     delay(waittime);
   }
-  //light shines on top left side more than top right. Turn clockwise 
-  if (((topright-topleft) > light_sens) && (posBot > minbotval)) {
+
+  //light shines on left side more than right. Turn clockwise
+  if (((topright - topleft) > light_sens) && (posBot >= minbotval)) {
     posBot = posBot - change;
-  sprintf(string, "3rd: adding");
-  Serial.println(string);
     delay(waittime);
   }
-  //light shines on down left side more than down right. Turn clockwise 
-  if (((downright-downleft) > light_sens) && (posBot > minbotval)) {
+  if (((downright - downleft) > light_sens) && (posBot >= minbotval)) {
     posBot = posBot - change;
-  sprintf(string, "4th: subtracting");
-  Serial.println(string);
     delay(waittime);
   }
-  //light shines on downleft side more than top left side. Turn clockwise
-  if (((topleft - downleft) > light_sens) && (posTop < maxtopval)) {
+
+  //light shines on down side more than top side. Turn clockwise
+  if (((topleft - downleft) > light_sens) && (posTop <= maxtopval)) {
     posTop = posTop + change;
+    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
+    sprintf(string, "Adding posTop: %d", posTop);
     delay(waittime);
   }
-  //light shines on downright side more than top right side. Turn clockwise
-  if (((topright - downright) > light_sens) && (posTop < maxtopval)) {
+  if (((topright - downright) > light_sens) && (posTop <= maxtopval)) {
     posTop = posTop + change;
+    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
+    sprintf(string, "Adding posTop: %d", posTop);
     delay(waittime);
   }
-  //light shines on top left side more than down left side. Turn counterclockwise
-  if (((downleft- topleft) > light_sens)  && (posTop > mintopval)) {
+
+  //light shines on top side more than down side. Turn counterclockwise
+  if (((downleft - topleft) > light_sens) && (posTop >= mintopval)) {
     posTop = posTop - change;
+    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
+    sprintf(string, "Substracting posTop: %d", posTop);
     delay(waittime);
   }
-  //light shines on top right side more than down right side. Turn counterclockwise
-  if (((downright - topright) > light_sens) && (posTop > mintopval)) {
+  if (((downright - topright) > light_sens) && (posTop >= mintopval)) {
     posTop = posTop - change;
+    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
+    sprintf(string, "Substracting posTop: %d", posTop);
     delay(waittime);
   }
+
   // sprintf(string, "Before Map. Top = %d, Bot = %d", posTop, posBot);
   // Serial.println(string);
 
 
-  myservoTop.write(map(posTop, 0, 270, 0, 180));  // tell servo to go to position in variable 'pos'
-  myservoBot.write(map(posBot, 0, 270, 0, 180));  // tell servo to go to position in variable 'pos'
+  Serial.println(string);
+  myservoBot.write(posBot);  // tell servo to go to position in variable 'pos'
   // sprintf(string, "Top Servo Position: %d", posTop);
   // Serial.println(string);
   // sprintf(string, "Bot Servo Position: %d", posBot);

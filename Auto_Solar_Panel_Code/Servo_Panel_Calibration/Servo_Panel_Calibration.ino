@@ -8,6 +8,7 @@
  */
 
 #include <ESP32Servo.h>
+#include "servo_move.h"
 
 #define GetName (Variable) (#Variable);
 #define SLOW 50
@@ -16,35 +17,7 @@
 #define SUPERFAST 5
 Servo myservotop;         // create servo object to control top servo
 Servo myservobot;         // create servo object to control top servo
-char str[30];
 // 16 servo objects can be created on the ESP32
-//function that will move servo to specified point at a slow rate (As  opposed to "Servo.write()" function which goes as fast as possible)
-void servo_move(Servo *servo, uint *cur_deg, uint next_deg, int waitTime) {
-  //if current degree < next degree, execute while statement
-  sprintf(str, "Servo starting to rotate to: %d", next_deg);
-  Serial.println(str);
-  if ((*cur_deg) < next_deg) {
-    //while current degrees < next degrees, keep adding +1 degree every few ms until current degree > next degree
-    while ((*cur_deg) < next_deg) {
-      delay(waitTime);
-      (*cur_deg)++;
-      Serial.println("Current Degree: " + String(*cur_deg));
-      (*servo).write((*cur_deg));
-    }
-  }
-  // if current degree > next degree, execute while statement
-  if ((*cur_deg) > next_deg) {
-    //While current degree > next degrees, keep subtracting -1 degree from current degree until current degree < next degree.
-    while ((*cur_deg) > next_deg) {
-      delay(waitTime);
-      (*cur_deg)--;
-      Serial.println("Current Degree: " + String(*cur_deg));
-      (*servo).write((*cur_deg));
-    }
-  }
-  sprintf(str, "Servo finished rotating to: %d", next_deg);
-  Serial.println(str);
-}
 
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
 int servoPinTop = 4;
