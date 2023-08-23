@@ -9,23 +9,27 @@
 
 #include <ESP32Servo.h>
 
+#define GetName (Variable) (#Variable);
 #define SLOW 50
 #define MEDIUM 25
 #define FAST 12
 #define SUPERFAST 5
 Servo myservotop;         // create servo object to control top servo
 Servo myservobot;         // create servo object to control top servo
+char str[30];
 // 16 servo objects can be created on the ESP32
 //function that will move servo to specified point at a slow rate (As  opposed to "Servo.write()" function which goes as fast as possible)
 void servo_move(Servo *servo, uint *cur_deg, uint next_deg, int waitTime) {
   //if current degree < next degree, execute while statement
+  sprintf(str, "Servo starting to rotate to: %d", next_deg);
+  Serial.println(str);
   if ((*cur_deg) < next_deg) {
     //while current degrees < next degrees, keep adding +1 degree every few ms until current degree > next degree
     while ((*cur_deg) < next_deg) {
       delay(waitTime);
       (*cur_deg)++;
       Serial.println("Current Degree: " + String(*cur_deg));
-      (*servo).write(map((*cur_deg), 0, 270, 0, 180));
+      (*servo).write((*cur_deg));
     }
   }
   // if current degree > next degree, execute while statement
@@ -35,16 +39,18 @@ void servo_move(Servo *servo, uint *cur_deg, uint next_deg, int waitTime) {
       delay(waitTime);
       (*cur_deg)--;
       Serial.println("Current Degree: " + String(*cur_deg));
-      (*servo).write(map((*cur_deg), 0, 270, 0, 180));
+      (*servo).write((*cur_deg));
     }
   }
+  sprintf(str, "Servo finished rotating to: %d", next_deg);
+  Serial.println(str);
 }
 
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
 int servoPinTop = 4;
 int servoPinBot = 2;
-uint top_degrees = 135;
-uint bot_degrees = 90;
+uint top_degrees = 0;
+uint bot_degrees = 0;
 void setup() {
   Serial.begin(115200);
   delay(1000);
@@ -56,7 +62,7 @@ void setup() {
   myservotop.setPeriodHertz(70);              // standard 70 hz servo
   myservobot.setPeriodHertz(70);              // standard 50 hz servo
   myservotop.attach(servoPinTop, 500, 2400);  // attaches the servo on pin 18 to the servo object
-  myservobot.attach(servoPinBot, 500, 2450);  // attaches the servo on pin 18 to the servo object
+  myservobot.attach(servoPinBot, 500, 2400);  // attaches the servo on pin 18 to the servo object
                                               // using default min/max of 1000us and 2000us
                                               // different servos may require different min/max settings
                                               // for an accurate 0 to 180 sweep
@@ -65,13 +71,13 @@ void setup() {
 
 void loop() {
   //moves servo to set degrees at a slow speed
-  servo_move(&myservobot, &bot_degrees, 0, MEDIUM);
-  delay(500);
-  // servo_move(&myservotop, &top_degrees, 45, MEDIUM);
-  // delay(2500);
+  servo_move(&myservobot, &bot_degrees, 0, FAST);
+  servo_move(&myservotop, &top_degrees, 0, FAST);
+  delay(5000);
   //moves servo to set degrees at a slow speed
-  servo_move(&myservobot, &bot_degrees, 180, MEDIUM);
-  delay(500);
+  servo_move(&myservobot, &bot_degrees, 180, FAST);
+  servo_move(&myservotop, &top_degrees, 180, FAST);
+  delay(5000);
   // servo_move(&myservotop, &top_degrees, 225, MEDIUM);
   // delay(2500);
   // myservotop.write(map(top_degrees, 0, 270, 0, 180));    // tell servo to go to position in variable 'top_degrees'
