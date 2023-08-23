@@ -22,8 +22,8 @@ int topright;
 int downleft;
 int downright;
 int change = 1;
-uint waittime = 50;
-int light_sens = 2000;
+uint waittime = 500;
+int light_sens = 200;
 
 //Pins reading input voltage from photoresistors
 int PINA = 25;
@@ -56,12 +56,11 @@ void setup() {
   ESP32PWM::allocateTimer(3);
   myservoBot.setPeriodHertz(70);              // standard 50 hz servo
   myservoTop.setPeriodHertz(70);              // standard 50 hz servo
-  myservoBot.attach(servoPinBot, 500, 2450);  // attaches the servo on pin 4 to the servo object
+  myservoBot.attach(servoPinBot, 500, 2400);  // attaches the servo on pin 4 to the servo object
   myservoTop.attach(servoPinTop, 500, 2400);  // attaches the servo on pin 2 to the servo object
   Serial.println("Hello World");
-  // servo_move(&myservoBot, &posBot, 0, MEDIUM);
-  delay(2000);
-  // servo_move(&myservoTop, &posTop, 0, MEDIUM);
+  servo_move(&myservoBot, &posBot, 90, SLOW);
+  servo_move(&myservoTop, &posTop, 90, SLOW);
   delay(2000);
   // using default min/max of 1000us and 2000us
   // different servos may require different min/max settings
@@ -75,60 +74,46 @@ void loop() {
   downright = analogRead(PIND);
 
   //light shines on right side more than left.  Turn counterclockwise
-  if (((topleft - topright) > light_sens) && (posBot <= maxbotval)) {
+  if (((topleft - topright) > light_sens) && (posBot < maxbotval)) {
     posBot = posBot + change;
-    delay(waittime);
   }
-  if (((downleft - downright) > light_sens) && (posBot <= maxbotval)) {
+  if (((downleft - downright) > light_sens) && (posBot < maxbotval)) {
     posBot = posBot + change;
-    Serial.println(string);
-    delay(waittime);
   }
 
   //light shines on left side more than right. Turn clockwise
-  if (((topright - topleft) > light_sens) && (posBot >= minbotval)) {
+  if (((topright - topleft) > light_sens) && (posBot > minbotval)) {
     posBot = posBot - change;
-    delay(waittime);
   }
-  if (((downright - downleft) > light_sens) && (posBot >= minbotval)) {
+  if (((downright - downleft) > light_sens) && (posBot > minbotval)) {
     posBot = posBot - change;
-    delay(waittime);
   }
 
   //light shines on down side more than top side. Turn clockwise
-  if (((topleft - downleft) > light_sens) && (posTop <= maxtopval)) {
+  if (((topleft - downleft) > light_sens) && (posTop < maxtopval)) {
     posTop = posTop + change;
-    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
-    sprintf(string, "Adding posTop: %d", posTop);
-    delay(waittime);
   }
-  if (((topright - downright) > light_sens) && (posTop <= maxtopval)) {
+  if (((topright - downright) > light_sens) && (posTop < maxtopval)) {
     posTop = posTop + change;
-    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
-    sprintf(string, "Adding posTop: %d", posTop);
-    delay(waittime);
   }
 
   //light shines on top side more than down side. Turn counterclockwise
-  if (((downleft - topleft) > light_sens) && (posTop >= mintopval)) {
+  if (((downleft - topleft) > light_sens) && (posTop > mintopval)) {
     posTop = posTop - change;
-    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
-    sprintf(string, "Substracting posTop: %d", posTop);
-    delay(waittime);
   }
-  if (((downright - topright) > light_sens) && (posTop >= mintopval)) {
+  if (((downright - topright) > light_sens) && (posTop > mintopval)) {
     posTop = posTop - change;
-    myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
-    sprintf(string, "Substracting posTop: %d", posTop);
-    delay(waittime);
   }
 
   // sprintf(string, "Before Map. Top = %d, Bot = %d", posTop, posBot);
   // Serial.println(string);
 
 
+    delay(waittime);
+  sprintf(string, "Bottom Servo: %u \t\t Top Servo: %u \t\t LDR: %d \t\t%d\t\t%d\t\t%d", posBot, posTop, topleft, topright, downleft, downright);
   Serial.println(string);
   myservoBot.write(posBot);  // tell servo to go to position in variable 'pos'
+  myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
   // sprintf(string, "Top Servo Position: %d", posTop);
   // Serial.println(string);
   // sprintf(string, "Bot Servo Position: %d", posBot);
