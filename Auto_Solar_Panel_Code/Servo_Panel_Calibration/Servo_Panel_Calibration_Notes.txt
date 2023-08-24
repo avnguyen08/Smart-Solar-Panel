@@ -1,0 +1,3 @@
+Servo_Panel_Calibration:
+Fix if statements in servo move
+Get GetName stringify macro working with servo names
