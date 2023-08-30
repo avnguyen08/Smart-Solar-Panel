@@ -21,9 +21,10 @@ int topleft;
 int topright;
 int downleft;
 int downright;
+int left, right, top, down;
 int change = 1;
 uint waittime = 500;
-int light_sens = 200;
+int light_sens = 50;
 
 //Pins reading input voltage from photoresistors
 int PINA = 25;
@@ -59,8 +60,8 @@ void setup() {
   myservoBot.attach(servoPinBot, 500, 2400);  // attaches the servo on pin 4 to the servo object
   myservoTop.attach(servoPinTop, 500, 2400);  // attaches the servo on pin 2 to the servo object
   Serial.println("Hello World");
-  servo_move(&myservoBot, &posBot, 90, SLOW);
-  servo_move(&myservoTop, &posTop, 90, SLOW);
+  servo_move(&myservoBot, &posBot, 90, FAST);
+  servo_move(&myservoTop, &posTop, 90, FAST);
   delay(2000);
   // using default min/max of 1000us and 2000us
   // different servos may require different min/max settings
@@ -73,35 +74,27 @@ void loop() {
   downleft = analogRead(PINC);
   downright = analogRead(PIND);
 
+  top = (topleft + topright)/2;
+  down = (downleft + downright)/2;
+  left = (topleft + downleft)/2;
+  right = (topright + downright)/2;
   //light shines on right side more than left.  Turn counterclockwise
-  if (((topleft - topright) > light_sens) && (posBot < maxbotval)) {
-    posBot = posBot + change;
-  }
-  if (((downleft - downright) > light_sens) && (posBot < maxbotval)) {
+  if (((left - right) > light_sens) && (posBot < maxbotval)) {
     posBot = posBot + change;
   }
 
   //light shines on left side more than right. Turn clockwise
-  if (((topright - topleft) > light_sens) && (posBot > minbotval)) {
-    posBot = posBot - change;
-  }
-  if (((downright - downleft) > light_sens) && (posBot > minbotval)) {
+  if (((right - left) > light_sens) && (posBot > minbotval)) {
     posBot = posBot - change;
   }
 
   //light shines on down side more than top side. Turn clockwise
-  if (((topleft - downleft) > light_sens) && (posTop < maxtopval)) {
-    posTop = posTop + change;
-  }
-  if (((topright - downright) > light_sens) && (posTop < maxtopval)) {
+  if (((top - down) > light_sens) && (posTop < maxtopval)) {
     posTop = posTop + change;
   }
 
   //light shines on top side more than down side. Turn counterclockwise
-  if (((downleft - topleft) > light_sens) && (posTop > mintopval)) {
-    posTop = posTop - change;
-  }
-  if (((downright - topright) > light_sens) && (posTop > mintopval)) {
+  if (((down - top) > light_sens) && (posTop > mintopval)) {
     posTop = posTop - change;
   }
 
@@ -109,7 +102,7 @@ void loop() {
   // Serial.println(string);
 
 
-    delay(waittime);
+    delay(30);
   sprintf(string, "Bottom Servo: %u \t\t Top Servo: %u \t\t LDR: %d \t\t%d\t\t%d\t\t%d", posBot, posTop, topleft, topright, downleft, downright);
   Serial.println(string);
   myservoBot.write(posBot);  // tell servo to go to position in variable 'pos'
