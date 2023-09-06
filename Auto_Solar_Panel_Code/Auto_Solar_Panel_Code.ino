@@ -1,10 +1,8 @@
 /*
-SUMMARY: Auto adjusting solar panel. Uses esp32 wroom. Example code taken from Great Scott Solar panel auto adjusting video. 
-Uses pins d19, d21, d32, d35 as analog read. 
-Uses D2 and D4 as output to configure solar panels.
-Board on Arduino IDE is ESP32 Dev Module
-
-
+SUMMARY: Auto adjusting solar panel. Uses two servos (0-180 degree), 
+Board: Esp32 WROOM(ESP32 Dev Module for Arduino).
+Uses pins d19, d21, d32, d35 as analog read to track the LDR sensors values
+Uses D2 and D4 as PWM pins to configure servo motors for solar panels.
 */
 #include <ESP32Servo.h>
 #include "Servo_Panel_Calibration\servo_move.h"
@@ -39,8 +37,8 @@ int minbotval = 0;
 int maxbotval = 180;
 int mintopval = 0;
 int maxtopval = 180;
-uint posTop = 0;  // variable to store the servo position
-uint posBot = 0;  // variable to store the servo position
+uint posTop = 90;  // variable to store the servo position
+uint posBot = 90;  // variable to store the servo position
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
 int servoPinTop = 4;
 int servoPinBot = 2;
@@ -55,17 +53,16 @@ void setup() {
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
+  //Using 70hz PWM signal. May differ based on servo
   myservoBot.setPeriodHertz(70);              // standard 50 hz servo
   myservoTop.setPeriodHertz(70);              // standard 50 hz servo
-  myservoBot.attach(servoPinBot, 500, 2400);  // attaches the servo on pin 4 to the servo object
-  myservoTop.attach(servoPinTop, 500, 2400);  // attaches the servo on pin 2 to the servo object
-  Serial.println("Hello World");
+  // using min/max of 500us and 2400us. May differ based on servo
+  myservoBot.attach(servoPinBot, 500, 2400);  // attaches the servo on pin 2 to the servo object
+  myservoTop.attach(servoPinTop, 500, 2400);  // attaches the servo on pin 4 to the servo object
   servo_move(&myservoBot, &posBot, 90, FAST);
   servo_move(&myservoTop, &posTop, 90, FAST);
-  delay(2000);
-  // using default min/max of 1000us and 2000us
-  // different servos may require different min/max settings
-  // for an accurate 0 to 180 sweep
+  Serial.println("Servo Setup Finished!");
+  delay(1500);
 }
 
 void loop() {
@@ -78,6 +75,13 @@ void loop() {
   down = (downleft + downright)/2;
   left = (topleft + downleft)/2;
   right = (topright + downright)/2;
+
+  //edge case: sensors in pure darkness, point solar panel up so get sensors to read again. ESP32 max value is 4096 for analog read
+  if(top > 4050 && down > 4050){
+  servo_move(&myservoTop, &posTop, 90, FAST);
+  servo_move(&myservoBot, &posBot, 90, FAST);
+  }
+
   //light shines on right side more than left.  Turn counterclockwise
   if (((left - right) > light_sens) && (posBot < maxbotval)) {
     posBot = posBot + change;
@@ -98,17 +102,10 @@ void loop() {
     posTop = posTop - change;
   }
 
-  // sprintf(string, "Before Map. Top = %d, Bot = %d", posTop, posBot);
-  // Serial.println(string);
-
-
     delay(30);
+  //debug string meant to display servos' degrees and LDR sensor readings
   sprintf(string, "Bottom Servo: %u \t\t Top Servo: %u \t\t LDR: %d \t\t%d\t\t%d\t\t%d", posBot, posTop, topleft, topright, downleft, downright);
   Serial.println(string);
   myservoBot.write(posBot);  // tell servo to go to position in variable 'pos'
   myservoTop.write(posTop);  // tell servo to go to position in variable 'pos'
-  // sprintf(string, "Top Servo Position: %d", posTop);
-  // Serial.println(string);
-  // sprintf(string, "Bot Servo Position: %d", posBot);
-  // Serial.println(string);
 }
