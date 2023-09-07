@@ -4,6 +4,10 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Schematic of Smart Solar Panel")
+  )
+
   (lib_symbols
     (symbol "Device:R" (pin_numbers hide) (pin_names (offset 0)) (in_bom yes) (on_board yes)
       (property "Reference" "R" (at 2.032 0 90)
@@ -1091,10 +1095,10 @@
   (symbol (lib_id "Motor:Motor_Servo") (at 236.22 72.39 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9ade4c80-98dc-4d03-8f23-48b281add4da)
-    (property "Reference" "M1" (at 245.11 70.6866 0)
+    (property "Reference" "M1" (at 245.11 71.3216 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "Motor_Servo" (at 245.11 73.2266 0)
+    (property "Value" "Bottom_Servo" (at 245.11 73.8616 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 236.22 77.216 0)
@@ -1232,10 +1236,10 @@
   (symbol (lib_id "Motor:Motor_Servo") (at 234.95 100.33 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d92d9c77-79ac-418b-943e-fbc5dc8d7b3a)
-    (property "Reference" "M2" (at 243.84 98.6266 0)
+    (property "Reference" "M2" (at 243.84 99.2616 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "Motor_Servo" (at 243.84 101.1666 0)
+    (property "Value" "Top_Servo" (at 243.84 101.8016 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 234.95 105.156 0)
