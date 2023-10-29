@@ -1,4 +1,11 @@
-// function that will move servo to specified point at a slow rate (As  opposed to "Servo.write()" function which goes as fast as possible)
+/***********************************************************************
+* FILENAME :        servo_move.h            
+* DESCRIPTION :     Moves servo to specified point at a slow rate 
+*                   Wraps servo.write() function 
+* AUTHOR :          Aaron Nguyen       
+*
+*/
+
 void servo_move(Servo *servo, uint *cur_deg, uint next_deg, int waitTime)
 {
   char str[50] = "";
