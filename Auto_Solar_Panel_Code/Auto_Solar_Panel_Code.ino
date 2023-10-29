@@ -26,10 +26,10 @@ uint waittime = 500;
 int light_sens = 50;
 
 //Pins reading input voltage from photoresistors
-int PINA = 25;
-int PINB = 33;
-int PINC = 32;
-int PIND = 35;
+int PINA = 25; //  topleft 
+int PINB = 33; //  topright 
+int PINC = 32; //  downleft 
+int PIND = 35; //  downright
 //Pin to control Power switch
 int PIN_Power = 14;
 
