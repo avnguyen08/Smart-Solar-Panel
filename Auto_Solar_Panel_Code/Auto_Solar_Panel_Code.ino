@@ -26,16 +26,16 @@ int topright;
 int downleft;
 int downright;
 int left, right, top, down;
-int change = 1;
+int change = 1; //how many degrees to change when ldr difference detected
 uint waittime = 500;
 int light_sens = 50;
 char string[50]; //debug info string
 
 //Pins reading input voltage from photoresistors
-int PINA = 25;
-int PINB = 33;
-int PINC = 32;
-int PIND = 35;
+int PINA = 25; //  topleft 
+int PINB = 33; //  topright 
+int PINC = 32; //  downleft 
+int PIND = 35; //  downright
 //Pin to control Power switch
 int PIN_Power = 14;
 
@@ -111,7 +111,7 @@ void loop() {
   } else {
     int currentTime = millis();  // current time
     //If last position of servos has been the same for a x amount of time, activate sleep mode
-    if (currentTime - startTime >= 3000) {
+    if (currentTime - startTime >= 4000) {
       if (tempTop == posTop && tempBot == posBot) {
         tempTop = posTop;
         tempBot = posBot;
@@ -133,13 +133,13 @@ void loop() {
     }
 
     //light shines on down side more than top side. Turn clockwise
-    if (((top - down) > light_sens) && (posTop < maxtopval)) {
-      posTop = posTop + change;
+    if (((top - down) > light_sens) && (posTop > mintopval)) {
+      posTop = posTop - change;
     }
 
     //light shines on top side more than down side. Turn counterclockwise
-    if (((down - top) > light_sens) && (posTop > mintopval)) {
-      posTop = posTop - change;
+    if (((down - top) > light_sens) && (posTop < maxtopval)) {
+      posTop = posTop + change;
     }
   }
   delay(MEDIUM);
