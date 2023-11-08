@@ -75,7 +75,7 @@ void setup() {
   pinMode(PINB, INPUT);
   pinMode(PINC, INPUT);
   pinMode(PIND, INPUT);
-  pinMode(PIN_Power, OUTPUT);
+  pinMode(PIN_Power, OUTPUT); //Pin to control power switch
   digitalWrite(PIN_Power, HIGH);
   // Allow allocation of all timers
   ESP32PWM::allocateTimer(0);
