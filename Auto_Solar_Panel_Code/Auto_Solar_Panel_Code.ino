@@ -13,8 +13,8 @@
 #include "Servo_Panel_Calibration\servo_move.h"
 
 //Delay in ms to adjust speed of servo motors
-#define SUPER_SLOW 400
-#define SLOW 100
+#define SUPER_SLOW 800
+#define SLOW 250
 #define MEDIUM 50
 #define FAST 12
 #define SUPER_FAST 5
@@ -45,8 +45,8 @@ Servo myservoTop;  // create servo object to control top servo
 // Degree range of top and bottom servos
 int minbotval = 0;
 int maxbotval = 180;
-int mintopval = 45;
-int maxtopval = 135;
+int mintopval = 15;
+int maxtopval = 165;
 RTC_DATA_ATTR uint posTop = 90;       // variable to store the top servo position, RTC saves after sleep
 RTC_DATA_ATTR uint posBot = 90;       // variable to store the bottom servo position, RTC saves after sleep
 uint tempTop = 90;  //variable to store past top position
@@ -107,7 +107,7 @@ void loop() {
   //edge case: sensors in darkness, no point in moving servos because it may be a cloud. ESP32 max value is 4096 for analog read
   if (top > 4050 && down > 4050) {
     // servo_move(&myservoTop, &posTop, 90, FAST);
-    // servo_move(&myservoBot, &posBot, 90, FAST);
+    // servo_move(&myservoBot, &posBot, 90, FAST); 
   } else {
     int currentTime = millis();  // current time
     //If last position of servos has been the same for a x amount of time, activate sleep mode
@@ -142,7 +142,7 @@ void loop() {
       posTop = posTop + change;
     }
   }
-  delay(MEDIUM);
+  delay(SUPER_SLOW);
   //debug string meant to display servos' degrees and LDR sensor readings
   sprintf(string, "Bottom Servo: %u \t\t Top Servo: %u \t\t LDR: %d \t\t%d\t\t%d\t\t%d", posBot, posTop, topleft, topright, downleft, downright);
   Serial.println(string);
