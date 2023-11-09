@@ -1,5 +1,5 @@
 /*
-* SUMMARY:      Auto adjusting solar panel. Uses two servos (0-180 degree), 
+* SUMMARY:      Auto adjusting solar panel using FREERTOS. Uses two servos (0-180 degree), 
 * Electronics:  Esp32 WROOM(ESP32 Dev Module for Arduino), 
 *               Polulu Power Switch, LDR sensors, servo motors, battery
 * Notes:        Uses pins d19, d21, d32, d35 as analog read to track the LDR sensors values
@@ -19,6 +19,13 @@
 #define FAST 12
 #define SUPER_FAST 5
 #define uS_TO_S_FACTOR 1000000  // Conversion factor for micro seconds to seconds
+
+//ESP32 Multicore configuration
+#if CONFIG_FREERTOS_UNICORE
+static const BaseType_t app_cpu = 0;
+#else
+static const BaseType_t app_cpu = 1;
+#endif
 
 //value of photoresistors
 int topleft;
