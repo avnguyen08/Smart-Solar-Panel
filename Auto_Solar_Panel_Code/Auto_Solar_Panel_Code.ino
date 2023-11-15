@@ -35,7 +35,8 @@ int downright;
 int left, right, top, down;
 int change = 1; //how many degrees to change when ldr difference detected
 uint waittime = 500;
-int light_sens = 50;
+uint checkTime = 4000; //amount of time it takes for esp32 to start sleep
+int light_sens = 400;
 char string[50]; //debug info string
 
 //Pins reading input voltage from photoresistors
@@ -118,11 +119,11 @@ void loop() {
   } else {
     int currentTime = millis();  // current time
     //If last position of servos has been the same for a x amount of time, activate sleep mode
-    if (currentTime - startTime >= 4000) {
+    if (currentTime - startTime >= checkTime) {
       if (tempTop == posTop && tempBot == posBot) {
         tempTop = posTop;
         tempBot = posBot;
-        solar_sleep(3); //sleep for x amount of seconds
+        solar_sleep(10*60); //sleep for x amount of seconds
       } else {
         startTime = currentTime;
         tempTop = posTop;
