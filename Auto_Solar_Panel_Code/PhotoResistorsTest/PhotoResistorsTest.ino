@@ -23,7 +23,7 @@ int PIND = 35;
 int servoPinTop = 2;
 int servoPinBot = 4;
 void setup() {
-  Serial.begin(19200);
+  Serial.begin(115200);
 
     pinMode(PINA, INPUT);
     pinMode(PINB, INPUT);

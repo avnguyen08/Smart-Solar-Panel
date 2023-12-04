@@ -16,7 +16,7 @@ void servo_move(Servo *servo, uint *cur_deg, uint next_deg, int waitTime)
   if ((*cur_deg) == next_deg)
   {
 
-    sprintf(str, "Current Degree: 90", (*cur_deg));
+    sprintf(str, "Current Degree: %d", (*cur_deg));
     Serial.println(str);
   }
   else if ((*cur_deg) < next_deg)
